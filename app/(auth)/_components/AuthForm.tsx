@@ -57,7 +57,7 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
       );
       form.reset();
       window.location.href = "/";
-    } catch (err) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setIsSubmitting(false);
