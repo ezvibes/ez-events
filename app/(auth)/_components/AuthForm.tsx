@@ -56,7 +56,7 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
         data?.message || (isLogin ? "Login successful." : "Signup successful.")
       );
       form.reset();
-      window.location.href = "/";
+      window.location.href = "/events";
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -87,7 +87,7 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
             autoComplete="email"
             required
             disabled={isSubmitting}
-            className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm text-zinc-900 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
+            className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
             placeholder="you@example.com"
           />
         </div>
@@ -106,7 +106,7 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
             autoComplete={isLogin ? "current-password" : "new-password"}
             required
             disabled={isSubmitting}
-            className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm text-zinc-900 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
+            className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
             placeholder="Your password"
           />
         </div>

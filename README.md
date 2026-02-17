@@ -7,7 +7,6 @@ Sports Event Management application for the Fastbreak AI Developer Challenge.
 - Next.js (App Router) + TypeScript
 - Tailwind CSS
 - Supabase (Auth + Postgres)
-- shadcn/ui + react-hook-form
 
 ## Requirements Summary
 
@@ -23,7 +22,25 @@ Sports Event Management application for the Fastbreak AI Developer Challenge.
 
 ## Project Status
 
-Scaffolded Next.js project with Tailwind and TypeScript. Implementation pending.
+Core auth and event dashboard functionality is implemented.
+
+Implemented now:
+
+- Email/password sign up and login with Supabase Auth
+- Auth-aware root routing (`/` -> `/events` or `/login`)
+- Events overview page (`/events`) with server-side search + sport filter
+- Load-more UX for incremental event listing
+- Create event UI (`/events/new`) and API endpoint
+- Shared TypeScript event model + DTO parsing
+- Seed CSV for winter olympics sample events
+
+Still pending:
+
+- Logout flow
+- Update/delete event UI + APIs (full CRUD)
+- Middleware-based central route protection
+- Toast notifications and richer loading states
+- Deployment configuration and production verification
 
 ## Implementation Phases (Review-Gated)
 
@@ -32,21 +49,20 @@ Each phase ends with a review checkpoint before continuing.
 ### Phase 1 — Foundation & Infrastructure
 
 - Supabase project setup and auth config
-- `.env.local` wiring (no secrets committed)
-- Auth flow (sign up, login, logout)
+- Auth flow (sign up, login; logout pending)
 - Events table schema
 - Server-side Supabase helper + typed error handling
 
-Review checkpoint: validate auth flow, schema, and server-only data access constraints.
+Status: mostly complete, logout remains.
 
 ### Phase 2 — Core Event Management
 
-- Event CRUD via Server Actions
+- Event create/list via API routes (update/delete pending)
 - Dashboard listing (server component fetch)
 - Search by name + filter by sport type with server-side refetch
-- Form UX with shadcn Form + react-hook-form + toasts
+- Basic form UX and inline error handling
 
-Review checkpoint: confirm no client-side DB calls and that search/filter refetches from DB.
+Status: mostly complete for create/list/search/filter; full CRUD and Server Actions alignment pending.
 
 ### Phase 3 — UI Polish & Deployment
 
@@ -55,7 +71,7 @@ Review checkpoint: confirm no client-side DB calls and that search/filter refetc
 - Code organization pass for server-only DB access
 - Vercel deployment + environment variables
 
-Review checkpoint: production verification and final checklist.
+Status: not started.
 
 ## Local Development
 
@@ -82,15 +98,16 @@ Additional server-side keys may be added later if needed.
 `events` table:
 
 - `id` (uuid, primary key)
-- `user_id` (uuid, references auth.users)
+- `owner_user_id` (uuid, references auth.users)
 - `name` (text)
 - `sport_type` (text)
 - `starts_at` (timestamptz)
 - `description` (text)
-- `venues` (text[] or jsonb)
+- `venues` (text[])
+- `updated_at` (timestamptz, default now, trigger-managed)
 - `created_at` (timestamptz, default now)
 
-Exact SQL will be finalized during Phase 1.
+RLS policies are enabled so users can only access their own events.
 
 ## Constraints To Protect
 
@@ -100,8 +117,6 @@ Exact SQL will be finalized during Phase 1.
 
 ## Open Questions
 
-- Confirm venue storage format: `text[]` vs `jsonb`
-- Confirm required sport types list (fixed set or free text)
 - Confirm if Google OAuth is in scope for this submission
 
 ## Deployment
