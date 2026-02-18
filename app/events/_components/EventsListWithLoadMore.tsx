@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 type EventListItem = {
@@ -92,7 +93,15 @@ export default function EventsListWithLoadMore({
           className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5"
         >
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <h2 className="text-lg font-semibold text-zinc-900">{event.name}</h2>
+            <div>
+              <h2 className="text-lg font-semibold text-zinc-900">{event.name}</h2>
+              <Link
+                href={`/events/${event.id}/edit`}
+                className="mt-1 inline-flex text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
+              >
+                Edit event
+              </Link>
+            </div>
             <span className="inline-flex w-fit rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium uppercase tracking-wide text-zinc-700">
               {event.sportType.replaceAll("_", " ")}
             </span>

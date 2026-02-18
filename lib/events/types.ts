@@ -51,8 +51,16 @@ export type CreateEventDto = {
   description?: string | null;
 };
 
-export type UpdateEventDto = Partial<CreateEventDto> & {
-  id: string;
+export type EventUpdateInputDto = {
+  name?: string;
+  sportType?: SportType | string;
+  startsAtIso?: string;
+  venues?: string[];
+  description?: string | null;
+};
+
+export type UpdateEventRequestDto = {
+  update: EventUpdateInputDto;
 };
 
 export type EventListQueryDto = {
@@ -99,13 +107,12 @@ export function mapCreateEventDtoToInsert(dto: CreateEventDto, ownerUserId: stri
   };
 }
 
-export function mapUpdateEventDtoToPatch(dto: UpdateEventDto) {
+export function mapUpdateEventDtoToPatch(dto: EventUpdateInputDto) {
   const patch: Record<string, string | string[] | null> = {};
 
   if (dto.name !== undefined) patch.name = dto.name.trim();
   if (dto.sportType !== undefined) patch.sport_type = dto.sportType;
   if (dto.startsAtIso !== undefined) patch.starts_at = dto.startsAtIso;
-  if (dto.endsAtIso !== undefined) patch.ends_at = dto.endsAtIso;
   if (dto.venues !== undefined) patch.venues = dto.venues;
   if (dto.description !== undefined) patch.description = dto.description;
 
@@ -191,6 +198,112 @@ export function parseEventListQuery(
       pageSize: Math.min(pageSize, 100),
       startsAfterIso,
       startsBeforeIso,
+    },
+  };
+}
+
+export function parseUpdateEventRequestDto(
+  input: unknown
+): ValidationResult<UpdateEventRequestDto> {
+  if (!input || typeof input !== "object") {
+    return { ok: false, error: "Request body must be a JSON object." };
+  }
+
+  const body = input as Record<string, unknown>;
+  const rawUpdate = body.update;
+
+  if (!rawUpdate || typeof rawUpdate !== "object" || Array.isArray(rawUpdate)) {
+    return { ok: false, error: "update object is required." };
+  }
+
+  const source = rawUpdate as Record<string, unknown>;
+  const update: EventUpdateInputDto = {};
+  let hasAtLeastOneField = false;
+
+  if ("name" in source) {
+    if (typeof source.name !== "string") {
+      return { ok: false, error: "update.name must be a string." };
+    }
+    const name = source.name.trim();
+    if (!name) {
+      return { ok: false, error: "update.name cannot be empty." };
+    }
+    update.name = name;
+    hasAtLeastOneField = true;
+  }
+
+  if ("sportType" in source) {
+    if (typeof source.sportType !== "string") {
+      return { ok: false, error: "update.sportType must be a string." };
+    }
+    const sportType = source.sportType.trim();
+    if (!sportType) {
+      return { ok: false, error: "update.sportType cannot be empty." };
+    }
+    update.sportType = sportType;
+    hasAtLeastOneField = true;
+  }
+
+  if ("startsAtIso" in source) {
+    if (typeof source.startsAtIso !== "string") {
+      return { ok: false, error: "update.startsAtIso must be a string." };
+    }
+    const startsAtIso = source.startsAtIso.trim();
+    if (!startsAtIso || !isValidDate(startsAtIso)) {
+      return {
+        ok: false,
+        error: "update.startsAtIso must be a valid ISO datetime.",
+      };
+    }
+    update.startsAtIso = startsAtIso;
+    hasAtLeastOneField = true;
+  }
+
+  if ("venues" in source) {
+    if (!Array.isArray(source.venues)) {
+      return { ok: false, error: "update.venues must be an array of strings." };
+    }
+    const venues = source.venues
+      .filter((value): value is string => typeof value === "string")
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    if (venues.length === 0) {
+      return {
+        ok: false,
+        error: "update.venues must include at least one venue.",
+      };
+    }
+
+    update.venues = venues;
+    hasAtLeastOneField = true;
+  }
+
+  if ("description" in source) {
+    if (source.description !== null && typeof source.description !== "string") {
+      return {
+        ok: false,
+        error: "update.description must be a string or null.",
+      };
+    }
+
+    const description =
+      typeof source.description === "string" ? source.description.trim() : null;
+    update.description = description || null;
+    hasAtLeastOneField = true;
+  }
+
+  if (!hasAtLeastOneField) {
+    return {
+      ok: false,
+      error: "update must include at least one editable field.",
+    };
+  }
+
+  return {
+    ok: true,
+    data: {
+      update,
     },
   };
 }

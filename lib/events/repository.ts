@@ -1,11 +1,16 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import {
   CreateEventDto,
+  EventUpdateInputDto,
   EventListQueryDto,
   EventRecord,
   mapCreateEventDtoToInsert,
   mapEventRecordToEvent,
+  mapUpdateEventDtoToPatch,
 } from "@/lib/events/types";
+
+const EVENT_SELECT_COLUMNS =
+  "id, owner_user_id, name, sport_type, starts_at, ends_at, venues, description, created_at, updated_at";
 
 type ListEventsResult = {
   events: ReturnType<typeof mapEventRecordToEvent>[];
@@ -26,10 +31,7 @@ export async function listEventsForUser(
 
   let builder = supabase
     .from("events")
-    .select(
-      "id, owner_user_id, name, sport_type, starts_at, ends_at, venues, description, created_at, updated_at",
-      { count: "exact" }
-    )
+    .select(EVENT_SELECT_COLUMNS, { count: "exact" })
     .eq("owner_user_id", userId)
     .order("starts_at", { ascending: true })
     .range(from, to);
@@ -70,13 +72,61 @@ export async function createEventForUser(
   const { data, error } = await supabase
     .from("events")
     .insert(insertPayload)
-    .select(
-      "id, owner_user_id, name, sport_type, starts_at, ends_at, venues, description, created_at, updated_at"
-    )
+    .select(EVENT_SELECT_COLUMNS)
     .single();
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  return mapEventRecordToEvent(data as EventRecord);
+}
+
+export async function getEventByIdForUser(
+  supabase: SupabaseClient,
+  userId: string,
+  eventId: string
+) {
+  const { data, error } = await supabase
+    .from("events")
+    .select(EVENT_SELECT_COLUMNS)
+    .eq("id", eventId)
+    .eq("owner_user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return mapEventRecordToEvent(data as EventRecord);
+}
+
+export async function updateEventForUser(
+  supabase: SupabaseClient,
+  userId: string,
+  eventId: string,
+  update: EventUpdateInputDto
+) {
+  const patch = mapUpdateEventDtoToPatch(update);
+
+  const { data, error } = await supabase
+    .from("events")
+    .update(patch)
+    .eq("id", eventId)
+    .eq("owner_user_id", userId)
+    .select(EVENT_SELECT_COLUMNS)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data) {
+    throw new Error("Event not found.");
   }
 
   return mapEventRecordToEvent(data as EventRecord);

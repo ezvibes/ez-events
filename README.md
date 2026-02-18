@@ -82,6 +82,10 @@ npm run dev
 
 App runs at `http://localhost:3000`.
 
+## API Test Cases
+
+- Update endpoint validation scenarios: `docs/update-event-test-cases.md`
+
 ## Environment Variables
 
 Create `.env.local`:

@@ -6,14 +6,26 @@ import { useState } from "react";
 import {
   parseVenuesFromInput,
   toIsoFromLocalDateTime,
+  toLocalDateTimeInputValue,
 } from "@/app/events/_components/form-utils";
 import { formatSportTypeLabel, SPORT_TYPES } from "@/lib/events/types";
 
-type CreateEventResponse = {
+type EditEventFormProps = {
+  eventId: string;
+  initialValues: {
+    name: string;
+    sportType: string;
+    startsAtIso: string;
+    venues: string[];
+    description: string | null;
+  };
+};
+
+type UpdateEventResponse = {
   error?: string;
 };
 
-export default function NewEventForm() {
+export default function EditEventForm({ eventId, initialValues }: EditEventFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,26 +41,28 @@ export default function NewEventForm() {
     const venues = parseVenuesFromInput(String(formData.get("venues") ?? ""));
 
     const payload = {
-      name: String(formData.get("name") ?? "").trim(),
-      sportType: String(formData.get("sportType") ?? "").trim(),
-      startsAtIso: toIsoFromLocalDateTime(String(formData.get("startsAt") ?? "")),
-      venues,
-      description: String(formData.get("description") ?? "").trim() || null,
+      update: {
+        name: String(formData.get("name") ?? "").trim(),
+        sportType: String(formData.get("sportType") ?? "").trim(),
+        startsAtIso: toIsoFromLocalDateTime(String(formData.get("startsAt") ?? "")),
+        venues,
+        description: String(formData.get("description") ?? "").trim() || null,
+      },
     };
 
     try {
-      const response = await fetch("/api/events", {
-        method: "POST",
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = (await response.json().catch(() => null)) as
-        | CreateEventResponse
+        | UpdateEventResponse
         | null;
 
       if (!response.ok) {
-        setError(data?.error ?? "Failed to create event.");
+        setError(data?.error ?? "Failed to update event.");
         return;
       }
 
@@ -75,7 +89,7 @@ export default function NewEventForm() {
           name="name"
           required
           disabled={isSubmitting}
-          placeholder="Men's Snowboard SuperPipe Final"
+          defaultValue={initialValues.name}
           className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
         />
       </div>
@@ -90,17 +104,19 @@ export default function NewEventForm() {
             name="sportType"
             required
             disabled={isSubmitting}
-            defaultValue=""
+            defaultValue={initialValues.sportType}
             className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            <option value="" disabled>
-              Select a sport
-            </option>
             {SPORT_TYPES.map((sportType) => (
               <option key={sportType} value={sportType}>
                 {formatSportTypeLabel(sportType)}
               </option>
             ))}
+            {!SPORT_TYPES.includes(initialValues.sportType as (typeof SPORT_TYPES)[number]) ? (
+              <option value={initialValues.sportType}>
+                {formatSportTypeLabel(initialValues.sportType)}
+              </option>
+            ) : null}
           </select>
         </div>
         <div className="space-y-1">
@@ -112,7 +128,7 @@ export default function NewEventForm() {
             name="venues"
             required
             disabled={isSubmitting}
-            placeholder="Livigno Snow Park, Warmup Zone"
+            defaultValue={initialValues.venues.join(", ")}
             className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
           />
         </div>
@@ -128,6 +144,7 @@ export default function NewEventForm() {
           type="datetime-local"
           required
           disabled={isSubmitting}
+          defaultValue={toLocalDateTimeInputValue(initialValues.startsAtIso)}
           className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
         />
       </div>
@@ -141,7 +158,7 @@ export default function NewEventForm() {
           name="description"
           rows={4}
           disabled={isSubmitting}
-          placeholder="Optional event details..."
+          defaultValue={initialValues.description ?? ""}
           className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
         />
       </div>
@@ -160,7 +177,7 @@ export default function NewEventForm() {
           disabled={isSubmitting}
           className="inline-flex h-11 items-center justify-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isSubmitting ? "Creating..." : "Create Event"}
+          {isSubmitting ? "Saving..." : "Save Changes"}
         </button>
       </div>
     </form>
