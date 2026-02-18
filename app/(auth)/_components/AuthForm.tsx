@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
 
 type AuthMode = "login" | "signup";
 
@@ -14,14 +15,13 @@ type AuthResponse = {
 };
 
 export default function AuthForm({ mode = "login" }: AuthFormProps) {
-  const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isLogin = mode === "login";
+  const { showToast } = useToast();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus(null);
     setError(null);
     setIsSubmitting(true);
 
@@ -48,17 +48,21 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
         | null;
 
       if (!response.ok) {
-        setError(data?.error || (isLogin ? "Login failed." : "Signup failed."));
+        const message = data?.error || (isLogin ? "Login failed." : "Signup failed.");
+        setError(message);
+        showToast(message, "error");
         return;
       }
 
-      setStatus(
-        data?.message || (isLogin ? "Login successful." : "Signup successful.")
-      );
+      const successMessage =
+        data?.message || (isLogin ? "Login successful." : "Signup successful.");
+      queueToastForNextRoute(successMessage, "success");
       form.reset();
       window.location.href = "/events";
     } catch {
-      setError("Network error. Please try again.");
+      const message = "Network error. Please try again.";
+      setError(message);
+      showToast(message, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -125,11 +129,6 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
               : "Create account"}
         </button>
 
-        {status ? (
-          <p className="text-sm text-emerald-600" role="status">
-            {status}
-          </p>
-        ) : null}
         {error ? (
           <p className="text-sm text-red-600" role="alert">
             {error}

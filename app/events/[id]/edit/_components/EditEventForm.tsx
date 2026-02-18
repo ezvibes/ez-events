@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
 import {
   parseVenuesFromInput,
   toIsoFromLocalDateTime,
@@ -30,6 +31,7 @@ export default function EditEventForm({ eventId, initialValues }: EditEventFormP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -63,14 +65,19 @@ export default function EditEventForm({ eventId, initialValues }: EditEventFormP
         | null;
 
       if (!response.ok) {
-        setError(data?.error ?? "Failed to update event.");
+        const message = data?.error ?? "Failed to update event.";
+        setError(message);
+        showToast(message, "error");
         return;
       }
 
+      queueToastForNextRoute("Event updated successfully.", "success");
       router.push("/events");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      const message = "Network error. Please try again.";
+      setError(message);
+      showToast(message, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -93,14 +100,19 @@ export default function EditEventForm({ eventId, initialValues }: EditEventFormP
         | null;
 
       if (!response.ok) {
-        setError(data?.error ?? "Failed to delete event.");
+        const message = data?.error ?? "Failed to delete event.";
+        setError(message);
+        showToast(message, "error");
         return;
       }
 
+      queueToastForNextRoute("Event deleted.", "success");
       router.push("/events");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      const message = "Network error. Please try again.";
+      setError(message);
+      showToast(message, "error");
     } finally {
       setIsDeleting(false);
     }

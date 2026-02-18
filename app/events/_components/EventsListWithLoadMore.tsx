@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useToast } from "@/app/_components/ToastProvider";
 
 type EventListItem = {
   id: string;
@@ -29,6 +30,7 @@ export default function EventsListWithLoadMore({
   q,
   sportType,
 }: EventsListWithLoadMoreProps) {
+  const { showToast } = useToast();
   const [events, setEvents] = useState<EventListItem[]>(initialEvents);
   const [totalCount, setTotalCount] = useState(total);
   const [page, setPage] = useState(initialPage);
@@ -62,7 +64,9 @@ export default function EventsListWithLoadMore({
         | null;
 
       if (!response.ok) {
-        setError(data?.error || "Failed to load more events.");
+        const message = data?.error || "Failed to load more events.";
+        setError(message);
+        showToast(message, "error");
         return;
       }
 
@@ -73,7 +77,9 @@ export default function EventsListWithLoadMore({
       }
       setPage(nextPage);
     } catch {
-      setError("Network error while loading more.");
+      const message = "Network error while loading more.";
+      setError(message);
+      showToast(message, "error");
     } finally {
       setIsLoading(false);
     }

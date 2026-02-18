@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
 
 type LogoutResponse = {
   error?: string;
@@ -11,6 +12,7 @@ export default function LogoutButton() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   async function handleLogout() {
     setError(null);
@@ -23,14 +25,19 @@ export default function LogoutButton() {
         | null;
 
       if (!response.ok) {
-        setError(data?.error ?? "Failed to logout.");
+        const message = data?.error ?? "Failed to logout.";
+        setError(message);
+        showToast(message, "error");
         return;
       }
 
+      queueToastForNextRoute("Logged out successfully.", "success");
       router.push("/login");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      const message = "Network error. Please try again.";
+      setError(message);
+      showToast(message, "error");
     } finally {
       setIsSubmitting(false);
     }

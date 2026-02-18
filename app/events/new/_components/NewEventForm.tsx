@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
 import {
   parseVenuesFromInput,
   toIsoFromLocalDateTime,
@@ -17,6 +18,7 @@ export default function NewEventForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,14 +50,19 @@ export default function NewEventForm() {
         | null;
 
       if (!response.ok) {
-        setError(data?.error ?? "Failed to create event.");
+        const message = data?.error ?? "Failed to create event.";
+        setError(message);
+        showToast(message, "error");
         return;
       }
 
+      queueToastForNextRoute("Event created successfully.", "success");
       router.push("/events");
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      const message = "Network error. Please try again.";
+      setError(message);
+      showToast(message, "error");
     } finally {
       setIsSubmitting(false);
     }
