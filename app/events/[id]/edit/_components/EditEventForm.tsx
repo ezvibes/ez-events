@@ -28,6 +28,7 @@ type UpdateEventResponse = {
 export default function EditEventForm({ eventId, initialValues }: EditEventFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -72,6 +73,36 @@ export default function EditEventForm({ eventId, initialValues }: EditEventFormP
       setError("Network error. Please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    const confirmed = window.confirm("Delete this event?");
+    if (!confirmed) return;
+
+    setError(null);
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: "DELETE",
+      });
+
+      const data = (await response.json().catch(() => null)) as
+        | UpdateEventResponse
+        | null;
+
+      if (!response.ok) {
+        setError(data?.error ?? "Failed to delete event.");
+        return;
+      }
+
+      router.push("/events");
+      router.refresh();
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -174,10 +205,18 @@ export default function EditEventForm({ eventId, initialValues }: EditEventFormP
         </Link>
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isDeleting}
           className="inline-flex h-11 items-center justify-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSubmitting ? "Saving..." : "Save Changes"}
+        </button>
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={isSubmitting || isDeleting}
+          className="inline-flex h-11 items-center justify-center rounded-lg border border-red-300 px-4 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isDeleting ? "Deleting..." : "Delete Event"}
         </button>
       </div>
     </form>

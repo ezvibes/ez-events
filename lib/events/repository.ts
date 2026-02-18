@@ -131,3 +131,25 @@ export async function updateEventForUser(
 
   return mapEventRecordToEvent(data as EventRecord);
 }
+
+export async function deleteEventForUser(
+  supabase: SupabaseClient,
+  userId: string,
+  eventId: string
+) {
+  const { data, error } = await supabase
+    .from("events")
+    .delete()
+    .eq("id", eventId)
+    .eq("owner_user_id", userId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data) {
+    throw new Error("Event not found.");
+  }
+}

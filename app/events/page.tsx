@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import EventsListWithLoadMore from "@/app/events/_components/EventsListWithLoadMore";
+import LogoutButton from "@/app/events/_components/LogoutButton";
 import { listEventsForUser } from "@/lib/events/repository";
 import {
   formatSportTypeLabel,
@@ -48,12 +49,15 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
           <h1 className="text-2xl font-semibold text-zinc-900">Events Overview</h1>
           <p className="text-sm text-zinc-600">{result.total} total events.</p>
         </div>
-        <Link
-          href="/events/new"
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white hover:bg-zinc-800"
-        >
-          Create Event
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/events/new"
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white hover:bg-zinc-800"
+          >
+            Create Event
+          </Link>
+          <LogoutButton />
+        </div>
       </header>
 
       <form className="mb-4 grid grid-cols-1 gap-3 rounded-xl border border-zinc-200 bg-white p-4 sm:grid-cols-[1fr_220px_auto] sm:items-end sm:gap-4 sm:mb-6">

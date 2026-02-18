@@ -30,13 +30,14 @@ export default function EventsListWithLoadMore({
   sportType,
 }: EventsListWithLoadMoreProps) {
   const [events, setEvents] = useState<EventListItem[]>(initialEvents);
+  const [totalCount, setTotalCount] = useState(total);
   const [page, setPage] = useState(initialPage);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const canLoadMore = useMemo(
-    () => events.length < total && !isLoading,
-    [events.length, total, isLoading]
+    () => events.length < totalCount && !isLoading,
+    [events.length, totalCount, isLoading]
   );
 
   async function handleLoadMore() {
@@ -57,7 +58,7 @@ export default function EventsListWithLoadMore({
         method: "GET",
       });
       const data = (await response.json().catch(() => null)) as
-        | { events?: EventListItem[]; error?: string }
+        | { events?: EventListItem[]; total?: number; error?: string }
         | null;
 
       if (!response.ok) {
@@ -67,6 +68,9 @@ export default function EventsListWithLoadMore({
 
       const incoming = Array.isArray(data?.events) ? data.events : [];
       setEvents((current) => [...current, ...incoming]);
+      if (typeof data?.total === "number") {
+        setTotalCount(data.total);
+      }
       setPage(nextPage);
     } catch {
       setError("Network error while loading more.");
