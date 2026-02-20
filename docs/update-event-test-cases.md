@@ -1,6 +1,8 @@
-# Update Event API Test Cases
+# Update Event Action Test Cases
 
-Endpoint: `PUT /api/events/:id`
+Action: `updateEventAction(eventId, { update: { ... } })`
+
+UI path for manual testing: `/events/:id/edit`
 
 Contract:
 
@@ -14,8 +16,8 @@ Contract:
 
 ## Preconditions
 
-1. User is logged in (session cookie is present).
-2. You have one valid event ID you own (call `GET /api/events?page=1&pageSize=1`).
+1. User is logged in.
+2. You have one valid event ID you own (from `/events` list).
 
 ## Case 1: Successful full update
 
@@ -35,9 +37,9 @@ Request body:
 
 Expected:
 
-- Status: `200`
-- Response has `event.id` matching `:id`
-- Updated values are returned
+- Save succeeds
+- Redirect to `/events`
+- Success toast appears
 
 ## Case 2: Partial update (description only)
 
@@ -53,7 +55,7 @@ Request body:
 
 Expected:
 
-- Status: `200`
+- Save succeeds
 - Only `description` changes
 
 ## Case 3: Validation failure, empty update object
@@ -68,7 +70,7 @@ Request body:
 
 Expected:
 
-- Status: `400`
+- Action returns `ok: false`
 - Error: `update must include at least one editable field.`
 
 ## Case 4: Validation failure, invalid startsAtIso
@@ -85,7 +87,7 @@ Request body:
 
 Expected:
 
-- Status: `400`
+- Action returns `ok: false`
 - Error: `update.startsAtIso must be a valid ISO datetime.`
 
 ## Case 5: Validation failure, invalid venues
@@ -102,7 +104,7 @@ Request body:
 
 Expected:
 
-- Status: `400`
+- Action returns `ok: false`
 - Error: `update.venues must include at least one venue.`
 
 ## Case 6: Not found / unauthorized ownership
@@ -117,9 +119,9 @@ Request body:
 }
 ```
 
-Use a random UUID or an event ID owned by another user.
+Use an event ID owned by another user, or a random UUID.
 
 Expected:
 
-- Status: `404`
-- Error: `Event not found.`
+- Action returns `ok: false`
+- Error indicates event was not found or update failed.

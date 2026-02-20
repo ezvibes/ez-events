@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
 import {
+  deleteEventAction,
+  updateEventAction,
+} from "@/app/events/_actions/events";
+import {
   parseVenuesFromInput,
   toIsoFromLocalDateTime,
   toLocalDateTimeInputValue,
@@ -20,10 +24,6 @@ type EditEventFormProps = {
     venues: string[];
     description: string | null;
   };
-};
-
-type UpdateEventResponse = {
-  error?: string;
 };
 
 export default function EditEventForm({ eventId, initialValues }: EditEventFormProps) {
@@ -54,18 +54,9 @@ export default function EditEventForm({ eventId, initialValues }: EditEventFormP
     };
 
     try {
-      const response = await fetch(`/api/events/${eventId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = (await response.json().catch(() => null)) as
-        | UpdateEventResponse
-        | null;
-
-      if (!response.ok) {
-        const message = data?.error ?? "Failed to update event.";
+      const result = await updateEventAction(eventId, payload);
+      if (!result.ok) {
+        const message = result.error ?? "Failed to update event.";
         setError(message);
         showToast(message, "error");
         return;
@@ -91,16 +82,9 @@ export default function EditEventForm({ eventId, initialValues }: EditEventFormP
     setIsDeleting(true);
 
     try {
-      const response = await fetch(`/api/events/${eventId}`, {
-        method: "DELETE",
-      });
-
-      const data = (await response.json().catch(() => null)) as
-        | UpdateEventResponse
-        | null;
-
-      if (!response.ok) {
-        const message = data?.error ?? "Failed to delete event.";
+      const result = await deleteEventAction(eventId);
+      if (!result.ok) {
+        const message = result.error ?? "Failed to delete event.";
         setError(message);
         showToast(message, "error");
         return;

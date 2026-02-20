@@ -4,15 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
+import { createEventAction } from "@/app/events/_actions/events";
 import {
   parseVenuesFromInput,
   toIsoFromLocalDateTime,
 } from "@/app/events/_components/form-utils";
 import { formatSportTypeLabel, SPORT_TYPES } from "@/lib/events/types";
-
-type CreateEventResponse = {
-  error?: string;
-};
 
 export default function NewEventForm() {
   const router = useRouter();
@@ -39,18 +36,9 @@ export default function NewEventForm() {
     };
 
     try {
-      const response = await fetch("/api/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = (await response.json().catch(() => null)) as
-        | CreateEventResponse
-        | null;
-
-      if (!response.ok) {
-        const message = data?.error ?? "Failed to create event.";
+      const result = await createEventAction(payload);
+      if (!result.ok) {
+        const message = result.error ?? "Failed to create event.";
         setError(message);
         showToast(message, "error");
         return;

@@ -3,10 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
-
-type LogoutResponse = {
-  error?: string;
-};
+import { logoutAction } from "@/app/(auth)/_actions/auth";
 
 export default function LogoutButton() {
   const router = useRouter();
@@ -19,13 +16,9 @@ export default function LogoutButton() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/logout", { method: "POST" });
-      const data = (await response.json().catch(() => null)) as
-        | LogoutResponse
-        | null;
-
-      if (!response.ok) {
-        const message = data?.error ?? "Failed to logout.";
+      const result = await logoutAction();
+      if (!result.ok) {
+        const message = result.error ?? "Failed to logout.";
         setError(message);
         showToast(message, "error");
         return;

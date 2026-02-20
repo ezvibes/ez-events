@@ -2,16 +2,12 @@
 
 import { useState } from "react";
 import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
+import { loginAction, signupAction } from "@/app/(auth)/_actions/auth";
 
 type AuthMode = "login" | "signup";
 
 type AuthFormProps = {
   mode?: AuthMode;
-};
-
-type AuthResponse = {
-  message?: string;
-  error?: string;
 };
 
 export default function AuthForm({ mode = "login" }: AuthFormProps) {
@@ -34,28 +30,18 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
     };
 
     try {
-      const response = await fetch(
-        isLogin ? "/api/auth/login" : "/api/auth/signup",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const result = isLogin
+        ? await loginAction(payload)
+        : await signupAction(payload);
 
-      const data = (await response.json().catch(() => null)) as
-        | AuthResponse
-        | null;
-
-      if (!response.ok) {
-        const message = data?.error || (isLogin ? "Login failed." : "Signup failed.");
+      if (!result.ok) {
+        const message = result.error || (isLogin ? "Login failed." : "Signup failed.");
         setError(message);
         showToast(message, "error");
         return;
       }
 
-      const successMessage =
-        data?.message || (isLogin ? "Login successful." : "Signup successful.");
+      const successMessage = isLogin ? "Login successful." : "Signup successful.";
       queueToastForNextRoute(successMessage, "success");
       form.reset();
       window.location.href = "/events";

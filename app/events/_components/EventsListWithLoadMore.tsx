@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useToast } from "@/app/_components/ToastProvider";
+import { listEventsPageAction } from "@/app/events/_actions/events";
 
 type EventListItem = {
   id: string;
@@ -49,31 +50,25 @@ export default function EventsListWithLoadMore({
     setIsLoading(true);
 
     const nextPage = page + 1;
-    const params = new URLSearchParams();
-    params.set("page", String(nextPage));
-    params.set("pageSize", String(pageSize));
-    if (q) params.set("q", q);
-    if (sportType) params.set("sportType", sportType);
-
     try {
-      const response = await fetch(`/api/events?${params.toString()}`, {
-        method: "GET",
+      const result = await listEventsPageAction({
+        page: nextPage,
+        pageSize,
+        q,
+        sportType,
       });
-      const data = (await response.json().catch(() => null)) as
-        | { events?: EventListItem[]; total?: number; error?: string }
-        | null;
 
-      if (!response.ok) {
-        const message = data?.error || "Failed to load more events.";
+      if (!result.ok) {
+        const message = result.error || "Failed to load more events.";
         setError(message);
         showToast(message, "error");
         return;
       }
 
-      const incoming = Array.isArray(data?.events) ? data.events : [];
+      const incoming = Array.isArray(result.data?.events) ? result.data.events : [];
       setEvents((current) => [...current, ...incoming]);
-      if (typeof data?.total === "number") {
-        setTotalCount(data.total);
+      if (typeof result.data?.total === "number") {
+        setTotalCount(result.data.total);
       }
       setPage(nextPage);
     } catch {
