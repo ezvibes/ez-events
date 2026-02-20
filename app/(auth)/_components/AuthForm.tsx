@@ -1,20 +1,57 @@
 "use client";
 
 import { useState } from "react";
+import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
+import { loginAction, signupAction } from "@/app/(auth)/_actions/auth";
 
-type AuthMode = "login";
+type AuthMode = "login" | "signup";
 
 type AuthFormProps = {
   mode?: AuthMode;
 };
 
 export default function AuthForm({ mode = "login" }: AuthFormProps) {
-  const [status, setStatus] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const isLogin = mode === "login";
+  const { showToast } = useToast();
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("Form submitted. Auth wiring comes next.");
+    setError(null);
+    setIsSubmitting(true);
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      email: String(formData.get("email") || "").trim(),
+      password: String(formData.get("password") || ""),
+    };
+
+    try {
+      const result = isLogin
+        ? await loginAction(payload)
+        : await signupAction(payload);
+
+      if (!result.ok) {
+        const message = result.error || (isLogin ? "Login failed." : "Signup failed.");
+        setError(message);
+        showToast(message, "error");
+        return;
+      }
+
+      const successMessage = isLogin ? "Login successful." : "Signup successful.";
+      queueToastForNextRoute(successMessage, "success");
+      form.reset();
+      window.location.href = "/events";
+    } catch {
+      const message = "Network error. Please try again.";
+      setError(message);
+      showToast(message, "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -39,7 +76,8 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
             type="email"
             autoComplete="email"
             required
-            className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm text-zinc-900 outline-none focus:border-zinc-900"
+            disabled={isSubmitting}
+            className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
             placeholder="you@example.com"
           />
         </div>
@@ -55,23 +93,31 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
             id="password"
             name="password"
             type="password"
-            autoComplete="current-password"
+            autoComplete={isLogin ? "current-password" : "new-password"}
             required
-            className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm text-zinc-900 outline-none focus:border-zinc-900"
+            disabled={isSubmitting}
+            className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
             placeholder="Your password"
           />
         </div>
 
         <button
           type="submit"
-          className="h-11 w-full rounded-lg bg-zinc-900 text-sm font-medium text-white transition hover:bg-zinc-800"
+          disabled={isSubmitting}
+          className="h-11 w-full rounded-lg bg-zinc-900 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isLogin ? "Sign in" : "Create account"}
+          {isSubmitting
+            ? isLogin
+              ? "Signing in..."
+              : "Creating account..."
+            : isLogin
+              ? "Sign in"
+              : "Create account"}
         </button>
 
-        {status ? (
-          <p className="text-sm text-zinc-600" role="status">
-            {status}
+        {error ? (
+          <p className="text-sm text-red-600" role="alert">
+            {error}
           </p>
         ) : null}
       </form>

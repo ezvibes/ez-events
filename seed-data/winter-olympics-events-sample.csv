@@ -1,0 +1,41 @@
+name,sport_type,starts_at,ends_at,venues,description
+Men's Ski Jumping Normal Hill Qualification,ski_jumping,2026-02-07T09:00:00Z,2026-02-07T10:30:00Z,"{""Predazzo Ski Jumping Stadium""}",Qualification round for men's normal hill.
+Women's Ski Jumping Normal Hill Final,ski_jumping,2026-02-08T11:00:00Z,2026-02-08T12:30:00Z,"{""Predazzo Ski Jumping Stadium""}",Medal final for women's normal hill.
+Men's Ski Jumping Large Hill Team,ski_jumping,2026-02-12T17:00:00Z,2026-02-12T19:00:00Z,"{""Predazzo Ski Jumping Stadium""}",Team competition on the large hill.
+Women's Snowboard SuperPipe Qualification,snowboard_superpipe,2026-02-09T13:00:00Z,2026-02-09T15:00:00Z,"{""Livigno Snow Park""}",Qualification heats for women's superpipe.
+Men's Snowboard SuperPipe Final,snowboard_superpipe,2026-02-10T18:00:00Z,2026-02-10T19:30:00Z,"{""Livigno Snow Park""}",Final round with best trick runs.
+Mixed Team Snowboard SuperPipe,snowboard_superpipe,2026-02-14T16:00:00Z,2026-02-14T18:00:00Z,"{""Livigno Snow Park""}",Mixed team superpipe showcase event.
+Curling Mixed Doubles Round Robin Session 1,curling,2026-02-06T08:00:00Z,2026-02-06T10:00:00Z,"{""Cortina Curling Olympic Arena""}",Opening mixed doubles matches.
+Curling Men's Round Robin Session 5,curling,2026-02-11T14:00:00Z,2026-02-11T16:30:00Z,"{""Cortina Curling Olympic Arena""}",Mid-stage men's round robin games.
+Curling Women's Semifinal,curling,2026-02-18T09:30:00Z,2026-02-18T12:00:00Z,"{""Cortina Curling Olympic Arena""}",Women's semifinal matchup.
+Curling Men's Gold Medal Game,curling,2026-02-20T18:30:00Z,2026-02-20T21:00:00Z,"{""Cortina Curling Olympic Arena""}",Championship game for men's teams.
+Men's Alpine Downhill Training Run 1,alpine_skiing,2026-02-05T10:00:00Z,2026-02-05T12:00:00Z,"{""Stelvio Slope"",""Bormio Alpine Center""}",Official downhill training session.
+Women's Alpine Giant Slalom Run 1,alpine_skiing,2026-02-13T09:00:00Z,2026-02-13T10:30:00Z,"{""Erta Slope"",""Kronplatz Arena""}",First run of women's giant slalom.
+Women's Alpine Giant Slalom Run 2,alpine_skiing,2026-02-13T12:30:00Z,2026-02-13T14:00:00Z,"{""Erta Slope"",""Kronplatz Arena""}",Second run deciding podium places.
+Men's Biathlon Sprint 10km,biathlon,2026-02-10T11:00:00Z,2026-02-10T13:00:00Z,"{""Anterselva Biathlon Center""}",Sprint race with prone and standing shooting.
+Women's Biathlon Pursuit 10km,biathlon,2026-02-12T11:00:00Z,2026-02-12T13:00:00Z,"{""Anterselva Biathlon Center""}",Pursuit start based on sprint results.
+Women's Figure Skating Short Program,figure_skating,2026-02-15T17:00:00Z,2026-02-15T20:00:00Z,"{""Milan Ice Arena""}",Short program segment of women's singles.
+Women's Figure Skating Free Skate,figure_skating,2026-02-17T17:30:00Z,2026-02-17T20:30:00Z,"{""Milan Ice Arena""}",Free skate decides final standings.
+Men's Ice Hockey Preliminary Round Group A,ice_hockey,2026-02-08T19:00:00Z,2026-02-08T21:30:00Z,"{""Milano Santa Giulia Arena""}",Group stage matchup in preliminary round.
+Women's Ice Hockey Gold Medal Game,ice_hockey,2026-02-19T20:00:00Z,2026-02-19T22:30:00Z,"{""Milano Santa Giulia Arena""}",Gold medal final for women's tournament.
+Short Track Speed Skating 1000m Final,short_track,2026-02-16T18:00:00Z,2026-02-16T19:00:00Z,"{""Forum di Assago""}",Final race for 1000m short track.
+Men's Cross-Country Sprint Qualifier,cross_country_skiing,2026-02-09T08:30:00Z,2026-02-09T10:00:00Z,"{""Val di Fiemme Nordic Center""}",Qualification for sprint knockout rounds.
+Women's Cross-Country Team Sprint Final,cross_country_skiing,2026-02-14T12:00:00Z,2026-02-14T13:30:00Z,"{""Val di Fiemme Nordic Center""}",Team sprint medal race.
+Freestyle Skiing Moguls Qualification,freestyle_skiing,2026-02-07T12:00:00Z,2026-02-07T14:00:00Z,"{""Livigno Aerials and Moguls Park""}",Qualification with two scored runs.
+Freestyle Skiing Aerials Mixed Team Final,freestyle_skiing,2026-02-18T19:30:00Z,2026-02-18T21:00:00Z,"{""Livigno Aerials and Moguls Park""}",Mixed team aerials medal event.
+Luge Men's Singles Run 1,luge,2026-02-06T15:00:00Z,2026-02-06T16:00:00Z,"{""Eugenio Monti Sliding Centre""}",First run of men's singles luge.
+Luge Men's Singles Run 2,luge,2026-02-06T17:30:00Z,2026-02-06T18:30:00Z,"{""Eugenio Monti Sliding Centre""}",Second run of men's singles luge.
+Bobsleigh 2-Man Heat 1,bobsleigh,2026-02-15T14:00:00Z,2026-02-15T15:00:00Z,"{""Eugenio Monti Sliding Centre""}",Opening heat of the two-man event.
+Bobsleigh 2-Man Heat 2,bobsleigh,2026-02-15T16:30:00Z,2026-02-15T17:30:00Z,"{""Eugenio Monti Sliding Centre""}",Second heat of the two-man event.
+Skeleton Women's Heat 1,skeleton,2026-02-11T13:00:00Z,2026-02-11T14:00:00Z,"{""Eugenio Monti Sliding Centre""}",First heat in women's skeleton.
+Skeleton Women's Heat 2,skeleton,2026-02-11T15:30:00Z,2026-02-11T16:30:00Z,"{""Eugenio Monti Sliding Centre""}",Second heat in women's skeleton.
+Men's Nordic Combined Individual Gundersen,nordic_combined,2026-02-13T08:30:00Z,2026-02-13T12:00:00Z,"{""Val di Fiemme Nordic Center""}",Jumping and cross-country combined event.
+Women's Speed Skating 1500m Final,speed_skating,2026-02-10T16:00:00Z,2026-02-10T17:15:00Z,"{""Baselga Ice Oval""}",Final ranking race for women's 1500m.
+Men's Speed Skating Team Pursuit,speed_skating,2026-02-17T15:00:00Z,2026-02-17T16:30:00Z,"{""Baselga Ice Oval""}",Team pursuit elimination rounds.
+Men's Snowboard Big Air Qualification,snowboard_big_air,2026-02-12T14:00:00Z,2026-02-12T16:00:00Z,"{""Livigno Big Air Venue""}",Qualification with three judged jumps.
+Women's Snowboard Big Air Final,snowboard_big_air,2026-02-13T19:00:00Z,2026-02-13T20:30:00Z,"{""Livigno Big Air Venue""}",Final with best two jump scores.
+Men's Freeski Slopestyle Final,freeski_slopestyle,2026-02-14T10:30:00Z,2026-02-14T12:00:00Z,"{""Livigno Slopestyle Park""}",Final run for freeski slopestyle.
+Women's Freeski Halfpipe Final,freeski_halfpipe,2026-02-16T11:00:00Z,2026-02-16T12:30:00Z,"{""Livigno Halfpipe""}",Halfpipe final with three runs.
+Men's Cross-Country 50km Mass Start,cross_country_skiing,2026-02-21T09:00:00Z,2026-02-21T12:30:00Z,"{""Val di Fiemme Nordic Center""}",Endurance finale race for men's field.
+Women's Curling Bronze Medal Game,curling,2026-02-20T09:00:00Z,2026-02-20T11:30:00Z,"{""Cortina Curling Olympic Arena""}",Bronze medal playoff for women's teams.
+Mixed Team Parallel Slalom Qualification,snowboard_parallel_slalom,2026-02-18T08:00:00Z,2026-02-18T10:00:00Z,"{""Livigno Alpine Zone""}",Mixed team bracket qualification runs.
