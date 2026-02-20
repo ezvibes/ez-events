@@ -29,6 +29,7 @@ export async function listEventsPageAction(
   ActionResult<{
     events: {
       id: string;
+      ownerUserId: string;
       name: string;
       sportType: string;
       startsAt: string;
@@ -67,6 +68,7 @@ export async function listEventsPageAction(
       data: {
         events: result.events.map((event) => ({
           id: event.id,
+          ownerUserId: event.ownerUserId,
           name: event.name,
           sportType: event.sportType,
           startsAt: event.startsAt.toISOString(),
