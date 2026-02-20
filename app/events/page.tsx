@@ -40,7 +40,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
     );
   }
 
-  const result = await listEventsForUser(supabase, user.id, queryResult.data);
+  const result = await listEventsForUser(supabase, queryResult.data);
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-5xl bg-zinc-50 p-4 sm:p-6">

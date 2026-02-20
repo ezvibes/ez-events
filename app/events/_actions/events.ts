@@ -55,7 +55,7 @@ export async function listEventsPageAction(
         ? Math.min(input.pageSize, 100)
         : 20;
 
-    const result = await listEventsForUser(supabase, user.id, {
+    const result = await listEventsForUser(supabase, {
       page,
       pageSize,
       q: input.q?.trim() || undefined,
