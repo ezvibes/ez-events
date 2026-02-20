@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useToast } from "@/app/_components/ToastProvider";
 import { listEventsPageAction } from "@/app/events/_actions/events";
+import { canUserEditEvent } from "@/lib/events/permissions";
 
 type EventListItem = {
   id: string;
+  ownerUserId: string;
   name: string;
   sportType: string;
   startsAt: string;
@@ -16,6 +18,7 @@ type EventListItem = {
 
 type EventsListWithLoadMoreProps = {
   initialEvents: EventListItem[];
+  currentUserId: string;
   total: number;
   initialPage: number;
   pageSize: number;
@@ -25,6 +28,7 @@ type EventsListWithLoadMoreProps = {
 
 export default function EventsListWithLoadMore({
   initialEvents,
+  currentUserId,
   total,
   initialPage,
   pageSize,
@@ -100,12 +104,14 @@ export default function EventsListWithLoadMore({
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2 className="text-lg font-semibold text-zinc-900">{event.name}</h2>
-              <Link
-                href={`/events/${event.id}/edit`}
-                className="mt-1 inline-flex text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
-              >
-                Edit event
-              </Link>
+              {canUserEditEvent(event.ownerUserId, currentUserId) ? (
+                <Link
+                  href={`/events/${event.id}/edit`}
+                  className="mt-1 inline-flex text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
+                >
+                  Edit event
+                </Link>
+              ) : null}
             </div>
             <span className="inline-flex w-fit rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium uppercase tracking-wide text-zinc-700">
               {event.sportType.replaceAll("_", " ")}

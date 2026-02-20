@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
 import { createEventAction } from "@/app/events/_actions/events";
@@ -12,7 +11,6 @@ import {
 import { formatSportTypeLabel, SPORT_TYPES } from "@/lib/events/types";
 
 export default function NewEventForm() {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
@@ -45,8 +43,7 @@ export default function NewEventForm() {
       }
 
       queueToastForNextRoute("Event created successfully.", "success");
-      router.push("/events");
-      router.refresh();
+      window.location.href = "/events";
     } catch {
       const message = "Network error. Please try again.";
       setError(message);

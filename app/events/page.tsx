@@ -102,12 +102,14 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
       <EventsListWithLoadMore
         initialEvents={result.events.map((event) => ({
           id: event.id,
+          ownerUserId: event.ownerUserId,
           name: event.name,
           sportType: event.sportType,
           startsAt: event.startsAt.toISOString(),
           venues: event.venues,
           description: event.description,
         }))}
+        currentUserId={user.id}
         total={result.total}
         initialPage={result.page}
         pageSize={result.pageSize}
