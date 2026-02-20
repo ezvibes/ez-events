@@ -21,7 +21,6 @@ type ListEventsResult = {
 
 export async function listEventsForUser(
   supabase: SupabaseClient,
-  userId: string,
   query: EventListQueryDto
 ): Promise<ListEventsResult> {
   const page = query.page ?? 1;
@@ -32,7 +31,6 @@ export async function listEventsForUser(
   let builder = supabase
     .from("events")
     .select(EVENT_SELECT_COLUMNS, { count: "exact" })
-    .eq("owner_user_id", userId)
     .order("starts_at", { ascending: true })
     .range(from, to);
 

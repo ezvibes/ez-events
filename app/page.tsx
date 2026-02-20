@@ -11,5 +11,5 @@ export default async function Home() {
     redirect("/events");
   }
 
-  redirect("/login");
+  redirect("/signup");
 }

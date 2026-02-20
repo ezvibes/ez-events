@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { queueToastForNextRoute, useToast } from "@/app/_components/ToastProvider";
 import { loginAction, signupAction } from "@/app/(auth)/_actions/auth";
@@ -121,6 +122,17 @@ export default function AuthForm({ mode = "login" }: AuthFormProps) {
           </p>
         ) : null}
       </form>
+
+      {!isLogin ? (
+        <div className="mt-4 border-t border-zinc-200 pt-4">
+          <Link
+            href="/login"
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-zinc-300 px-4 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
+          >
+            Already have an account? Sign in
+          </Link>
+        </div>
+      ) : null}
     </div>
   );
 }
