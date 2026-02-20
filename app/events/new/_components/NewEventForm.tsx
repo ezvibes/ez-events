@@ -70,7 +70,7 @@ export default function NewEventForm() {
           name="name"
           required
           disabled={isSubmitting}
-          placeholder="Men's Snowboard SuperPipe Final"
+          placeholder="Event Name"
           className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
         />
       </div>
@@ -107,7 +107,7 @@ export default function NewEventForm() {
             name="venues"
             required
             disabled={isSubmitting}
-            placeholder="Livigno Snow Park, Warmup Zone"
+            placeholder="Event Location"
             className="h-11 w-full rounded-lg border border-zinc-300 px-3 text-sm font-semibold text-zinc-950 placeholder:text-zinc-500 outline-none focus:border-zinc-900 disabled:cursor-not-allowed disabled:opacity-70"
           />
         </div>

@@ -10,7 +10,7 @@ import {
   parseCreateEventDto,
   parseUpdateEventRequestDto,
 } from "@/lib/events/types";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseActionClient } from "@/lib/supabase/action";
 
 type ActionResult<T = void> =
   | { ok: true; data?: T }
@@ -39,7 +39,7 @@ export async function listEventsPageAction(
   }>
 > {
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = await createSupabaseActionClient();
     const {
       data: { user },
       error: authError,
@@ -90,7 +90,7 @@ export async function createEventAction(input: unknown): Promise<ActionResult> {
   }
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = await createSupabaseActionClient();
     const {
       data: { user },
       error: authError,
@@ -124,7 +124,7 @@ export async function updateEventAction(
   }
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = await createSupabaseActionClient();
     const {
       data: { user },
       error: authError,
@@ -150,7 +150,7 @@ export async function deleteEventAction(eventId: string): Promise<ActionResult> 
   }
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = await createSupabaseActionClient();
     const {
       data: { user },
       error: authError,

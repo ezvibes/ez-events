@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-export async function createSupabaseServerClient() {
+export async function createSupabaseActionClient() {
   const cookieStore = await cookies();
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -15,13 +15,11 @@ export async function createSupabaseServerClient() {
       get(name) {
         return cookieStore.get(name)?.value;
       },
-      // Server Components are read-only for cookie mutation.
-      set() {
-        // no-op
+      set(name, value, options) {
+        cookieStore.set({ name, value, ...options });
       },
-      // Server Components are read-only for cookie mutation.
-      remove() {
-        // no-op
+      remove(name, options) {
+        cookieStore.set({ name, value: "", ...options });
       },
     },
   });

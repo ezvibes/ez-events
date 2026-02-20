@@ -1,6 +1,6 @@
 "use server";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseActionClient } from "@/lib/supabase/action";
 
 type ActionResult<T = void> =
   | { ok: true; data?: T }
@@ -20,7 +20,7 @@ export async function loginAction(input: AuthPayload): Promise<ActionResult> {
   }
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = await createSupabaseActionClient();
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -46,7 +46,7 @@ export async function signupAction(input: AuthPayload): Promise<ActionResult> {
   }
 
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = await createSupabaseActionClient();
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -65,7 +65,7 @@ export async function signupAction(input: AuthPayload): Promise<ActionResult> {
 
 export async function logoutAction(): Promise<ActionResult> {
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = await createSupabaseActionClient();
     const { error } = await supabase.auth.signOut();
 
     if (error) {
