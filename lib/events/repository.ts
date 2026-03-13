@@ -151,3 +151,49 @@ export async function deleteEventForUser(
     throw new Error("Event not found.");
   }
 }
+
+export async function registerForEvent(
+  supabase: SupabaseClient,
+  userId: string,
+  eventId: string
+) {
+  const { error } = await supabase.from("event_registrations").insert({
+    event_id: eventId,
+    user_id: userId,
+  });
+
+  if (error) {
+    // Unique violation means the user is already registered; treat as idempotent success.
+    if (error.code === "23505") {
+      return;
+    }
+
+    throw new Error(error.message);
+  }
+}
+
+export async function listRegisteredEventIdsForUser(
+  supabase: SupabaseClient,
+  userId: string,
+  eventIds: string[]
+) {
+  if (eventIds.length === 0) {
+    return new Set<string>();
+  }
+
+  const { data, error } = await supabase
+    .from("event_registrations")
+    .select("event_id")
+    .eq("user_id", userId)
+    .in("event_id", eventIds);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const ids = (data ?? [])
+    .map((row) => row.event_id)
+    .filter((value): value is string => typeof value === "string");
+
+  return new Set(ids);
+}

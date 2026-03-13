@@ -1,6 +1,10 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { EventRecord } from "@/lib/events/types";
-import { listEventsForUser, updateEventForUser } from "@/lib/events/repository";
+import {
+  listEventsForUser,
+  registerForEvent,
+  updateEventForUser,
+} from "@/lib/events/repository";
 
 function makeListBuilder(response: {
   data: EventRecord[] | null;
@@ -98,5 +102,23 @@ describe("events repository", () => {
     expect(update).toHaveBeenCalledWith({ name: "Updated" });
     expect(eqFirst).toHaveBeenCalledWith("id", "event-1");
     expect(eqSecond).toHaveBeenCalledWith("owner_user_id", "user-1");
+  });
+
+  test("registerForEvent ignores duplicate registration", async () => {
+    const insert = jest.fn().mockResolvedValue({
+      error: { code: "23505", message: "duplicate key value violates unique constraint" },
+    });
+
+    const supabase = {
+      from: jest.fn().mockReturnValue({ insert }),
+    } as unknown as SupabaseClient;
+
+    await expect(registerForEvent(supabase, "user-1", "event-1")).resolves.toBeUndefined();
+
+    expect(supabase.from).toHaveBeenCalledWith("event_registrations");
+    expect(insert).toHaveBeenCalledWith({
+      event_id: "event-1",
+      user_id: "user-1",
+    });
   });
 });

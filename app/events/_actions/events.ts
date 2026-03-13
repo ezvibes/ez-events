@@ -3,7 +3,9 @@
 import {
   createEventForUser,
   deleteEventForUser,
+  listRegisteredEventIdsForUser,
   listEventsForUser,
+  registerForEvent,
   updateEventForUser,
 } from "@/lib/events/repository";
 import {
@@ -35,6 +37,7 @@ export async function listEventsPageAction(
       startsAt: string;
       venues: string[];
       description: string | null;
+      isRegistered: boolean;
     }[];
     total: number;
   }>
@@ -62,6 +65,11 @@ export async function listEventsPageAction(
       q: input.q?.trim() || undefined,
       sportType: input.sportType?.trim() || undefined,
     });
+    const registeredEventIds = await listRegisteredEventIdsForUser(
+      supabase,
+      user.id,
+      result.events.map((event) => event.id)
+    );
 
     return {
       ok: true,
@@ -74,6 +82,7 @@ export async function listEventsPageAction(
           startsAt: event.startsAt.toISOString(),
           venues: event.venues,
           description: event.description,
+          isRegistered: registeredEventIds.has(event.id),
         })),
         total: result.total,
       },
@@ -167,6 +176,32 @@ export async function deleteEventAction(eventId: string): Promise<ActionResult> 
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Failed to delete event.";
+    return { ok: false, error: message };
+  }
+}
+
+export async function registerForEventAction(eventId: string): Promise<ActionResult> {
+  const parsedEventId = eventId.trim();
+  if (!parsedEventId) {
+    return { ok: false, error: "Event id is required." };
+  }
+
+  try {
+    const supabase = await createSupabaseActionClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { ok: false, error: "Unauthorized." };
+    }
+
+    await registerForEvent(supabase, user.id, parsedEventId);
+    return { ok: true };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to register for event.";
     return { ok: false, error: message };
   }
 }
