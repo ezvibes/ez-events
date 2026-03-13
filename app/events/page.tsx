@@ -2,7 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import EventsListWithLoadMore from "@/app/events/_components/EventsListWithLoadMore";
 import LogoutButton from "@/app/events/_components/LogoutButton";
-import { listEventsForUser } from "@/lib/events/repository";
+import {
+  listEventsForUser,
+  listRegisteredEventIdsForUser,
+} from "@/lib/events/repository";
 import {
   formatSportTypeLabel,
   parseEventListQuery,
@@ -41,6 +44,11 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   }
 
   const result = await listEventsForUser(supabase, queryResult.data);
+  const registeredEventIds = await listRegisteredEventIdsForUser(
+    supabase,
+    user.id,
+    result.events.map((event) => event.id)
+  );
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-5xl bg-zinc-50 p-4 sm:p-6">
@@ -108,6 +116,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
           startsAt: event.startsAt.toISOString(),
           venues: event.venues,
           description: event.description,
+          isRegistered: registeredEventIds.has(event.id),
         }))}
         currentUserId={user.id}
         total={result.total}

@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useToast } from "@/app/_components/ToastProvider";
-import { listEventsPageAction } from "@/app/events/_actions/events";
+import {
+  listEventsPageAction,
+  registerForEventAction,
+} from "@/app/events/_actions/events";
 import { canUserEditEvent } from "@/lib/events/permissions";
 
 type EventListItem = {
@@ -14,6 +17,7 @@ type EventListItem = {
   startsAt: string;
   venues: string[];
   description: string | null;
+  isRegistered: boolean;
 };
 
 type EventsListWithLoadMoreProps = {
@@ -40,6 +44,7 @@ export default function EventsListWithLoadMore({
   const [totalCount, setTotalCount] = useState(total);
   const [page, setPage] = useState(initialPage);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegisteringEventId, setIsRegisteringEventId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const canLoadMore = useMemo(
@@ -84,6 +89,34 @@ export default function EventsListWithLoadMore({
     }
   }
 
+  async function handleRegister(eventId: string) {
+    const event = events.find((item) => item.id === eventId);
+    if (!event || event.isRegistered) return;
+
+    setIsRegisteringEventId(eventId);
+
+    try {
+      const result = await registerForEventAction(eventId);
+
+      if (!result.ok) {
+        const message = result.error || "Failed to RSVP for event.";
+        showToast(message, "error");
+        return;
+      }
+
+      setEvents((current) =>
+        current.map((item) =>
+          item.id === eventId ? { ...item, isRegistered: true } : item
+        )
+      );
+      showToast("You are registered for this event.", "success");
+    } catch {
+      showToast("Network error while registering.", "error");
+    } finally {
+      setIsRegisteringEventId(null);
+    }
+  }
+
   if (events.length === 0) {
     return (
       <section className="space-y-3">
@@ -104,14 +137,32 @@ export default function EventsListWithLoadMore({
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2 className="text-lg font-semibold text-zinc-900">{event.name}</h2>
-              {canUserEditEvent(event.ownerUserId, currentUserId) ? (
-                <Link
-                  href={`/events/${event.id}/edit`}
-                  className="mt-1 inline-flex text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
+              <div className="mt-1 flex items-center gap-3">
+                {canUserEditEvent(event.ownerUserId, currentUserId) ? (
+                  <Link
+                    href={`/events/${event.id}/edit`}
+                    className="inline-flex text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
+                  >
+                    Edit event
+                  </Link>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => handleRegister(event.id)}
+                  disabled={event.isRegistered || isRegisteringEventId === event.id}
+                  className={`inline-flex h-7 items-center rounded-md border px-2.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-70 ${
+                    event.isRegistered
+                      ? "border-green-600 text-green-700"
+                      : "border-zinc-300 text-zinc-700 hover:bg-zinc-100"
+                  }`}
                 >
-                  Edit event
-                </Link>
-              ) : null}
+                  {event.isRegistered
+                    ? "Registered"
+                    : isRegisteringEventId === event.id
+                      ? "Registering..."
+                      : "Register"}
+                </button>
+              </div>
             </div>
             <span className="inline-flex w-fit rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium uppercase tracking-wide text-zinc-700">
               {event.sportType.replaceAll("_", " ")}
